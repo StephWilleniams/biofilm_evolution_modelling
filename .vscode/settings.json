@@ -1,6 +1,7 @@
 {
     "files.exclude": {
       "*/.*": true,
+      ".*": true,
       "**/.DS_Store": true,
     }
   }
