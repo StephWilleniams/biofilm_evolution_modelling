@@ -5,7 +5,7 @@
 ##--------------------------------------------------##
 
 # Load the required packages
-using DifferentialEquations, Plots
+using DifferentialEquations, Plots, LaTeXStrings
 
 # Define the ODE system for the BFP model
 function BFP_model(du, u, theta, t)
@@ -39,10 +39,10 @@ e4 = 0.5 # Bound bacteria growth efficiency
 e5 = 0.5 # Predator growth efficiency
 
 # Growth rates
-r2 = 5*0.21*ND_T # Free bacteria growth rate - cells/hr * ND_hrs
-r3 = 5*0.007*ND_T # Bound bacteria growth rate - cells/hr * ND_hrs
-r4 = 2*0.12*ND_T # Predator growth rate - cells/hr * ND_hrs
-r5 = 3*0.09*ND_T # Predator death rate - 1/hrs * ND_hrs
+r2 = (1/e23)*0.21*ND_T # Free bacteria growth rate - cells/hr * ND_hrs
+r3 = (1/e23)*0.007*ND_T # Bound bacteria growth rate - cells/hr * ND_hrs
+r4 = (1/e4)*0.12*ND_T # Predator growth rate - cells/hr * ND_hrs
+r5 = (1/e5)*0.09*ND_T # Predator death rate - 1/hrs * ND_hrs
 
 # Half saturation constants
 H23 = 3.0/ND_C # Half saturations of bacteria
@@ -61,7 +61,8 @@ theta_true = ( r2, r3, r4, r5, e23, e4, e5, H23, H4, H5, chi_on_max, chi_on_min,
 ### Define and solve the ODE system
 
 # Set the initial conditions
-u0 = [ ND_C, 1.0*ND_C, 0.0, 3.0*0.01*ND_C, 8.0*0.001*ND_C ] # IVP
+#u0 = [ ND_C, 1.0*ND_C, 0.0, 3.0*0.01*ND_C, 8.0*0.001*ND_C ] # IVP - 2B
+u0 = [ ND_C, 0.3*ND_C, 0.0, 10.0*0.1*ND_C, 8.0*0.1*ND_C ] # IVP - 2C
 
 # Set the time span of the solution
 tspan = (0.0, 1.0) # Time span of solution
@@ -83,11 +84,15 @@ plot_solver = true
 if plot_solver
 
     Scale = ND_C.*[3.0,3.0,8.0,3.0,8.0];
+    Scale1 = ND_C.*[1.0,1.0,1.0,1.0,1.0];
+    species = ["Media", "Free Predator", "Bound Bacteria", "Free Ciliate", "Bound Predator"]
 
     plt = plot()
     for i = 1:5
-        plot!(plt,output_times, NofT[i,:]./Scale[i], label="Species $i")
+        plot!(plt,output_times, NofT[i,:]./Scale1[i], label=false, lw=3)
     end 
+
+    savefig("f_figures/2C.png") 
     display(plt)
 
 end
