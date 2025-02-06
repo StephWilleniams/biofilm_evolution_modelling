@@ -61,15 +61,14 @@ theta_true = ( r2, r3, r4, r5, e23, e4, e5, H23, H4, H5, chi_on_max, chi_on_min,
 ### Define and solve the ODE system
 
 # Set the initial conditions
-#u0 = [ ND_C, 1.0*ND_C, 0.0, 3.0*0.01*ND_C, 8.0*0.001*ND_C ] # IVP - 2B
-u0 = [ ND_C, 0.3*ND_C, 0.0, 10.0*0.1*ND_C, 8.0*0.1*ND_C ] # IVP - 2C
+#u0 = [ ND_C, 1.0*ND_C, 0.01, 3.0*0.01*ND_C, 8.0*0.001*ND_C ] # IVP - 2B
+u0 = [ ND_C, 0.3*ND_C, 0.01, 10.0*0.1*ND_C, 8.0*0.1*ND_C ] # IVP - 2C
 
 # Set the time span of the solution
 tspan = (0.0, 1.0) # Time span of solution
 sample_frequency = 0.01 # Sample frequency
 output_times = tspan[1]:sample_frequency:tspan[2] # Times at which to output the solutions
 N_times = length(output_times) # Number of output times
-#ode_algo = AutoVern9(Rodas5()) # Optional stiff solver, required for optimisation
 ode_algo = Tsit5() # Non-stiff solver
 
 # Solve the ODE system
@@ -78,7 +77,6 @@ sol = solve(prob, ode_algo) # Solve the ODE problem
 NofT = sol(output_times) # Extract the solution at the output times
 
 ### Plot the solution
-
 plot_solver = true
 
 if plot_solver

@@ -20,11 +20,11 @@ function BFP_model(du, u, params, t)
     r2, r3, r4, r5, e23, e4, e5, H23, H4, H5, chi_on_max, chi_on_min, interaction_strength, chioff = params
 
     # Re-fix parameters not of interest to the sensitivity
-    r2 = 0.21*ND_T
-    r3 = 0.007*ND_T
-    r4 = 0.12*ND_T
-    r5 = 0.09*ND_T
-    e23 = 0.2
+    # r2 = 0.21*ND_T
+    # r3 = 0.007*ND_T
+    # r4 = 0.12*ND_T
+    # r5 = 0.09*ND_T
+    # e23 = 0.2
 
     # Calculate the hill functions to output
     CHfunct = C/(C+H23)

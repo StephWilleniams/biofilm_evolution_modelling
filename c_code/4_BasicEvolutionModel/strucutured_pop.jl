@@ -13,40 +13,24 @@ We will attempt to quantify the mean of this biofilm formation rate.
 
 using DifferentialEquations, Plots
 
-# Define the ODE of the system dynamics
-# function BFP_model(du, u, params, t)
-#     # Extract the different species
-#     C, F, B, S, A = u
-#     # Extract parameters
-#     r2, r3, r4, r5, e23, e4, e5, H23, H4, H5, chi_on_max, chi_on_min, interaction_strength, chioff = params
-#     # Calculate the hill functions to output
-#     CHfunct = C/(C+H23)
-#     FHfunct = F/(F+H4)
-#     BHfunct = B/(B+H5)
-#     # Calculate the attatchment functions
-#     chion = (chi_on_max*interaction_strength + chi_on_min*B)/(interaction_strength + B)
-#     # Calculate the ODEs
-#     du[1] = - r2*CHfunct*F - r3*CHfunct*B
-#     du[2] = + e23*r2*CHfunct*F - r4*FHfunct*S - chion*F + chioff*B
-#     du[3] = + e23*r3*CHfunct*B - r5*BHfunct*A + chion*F - chioff*B
-#     du[4] = + e4*r4*FHfunct*S 
-#     du[5] = + e5*r5*BHfunct*A
-# end
+Nbins = Int((length(u)-3)/2)
+chionmin = 0.00001
+chionmax = 0.1
+chionVals = LinRange(chionmin,chionmax,Nbins)
 
 function BFP_model(du, u, theta, t)
-    
-    Nbins = Int((length(u)-3)/2)
-    chionVals = LinRange(0.000001,0.1,Nbins)
 
     # Extract parameters
     r2, r3, r4, r5, e23, e4, e5, H2, H3, H4, H5, chi_off = theta[1:end-1]
     
     # Calculate the ODEs to output
     du[1] = -r2*(u[1]/(u[1]+H2))*sum(u[2:1+N_bins]) - r3*(u[1]/(u[1]+H3))*sum(u[2+N_bins:2+2*N_bins-1]) # 
+
     for i in 1:Nbins
         du[1+i] = e23*r2*(u[1]/(u[1]+H2))*u[i+1] - r4*(u[i+1]/(u[i+1]+H4))*u[end-1] - chionVals[i]*u[i+1] + chi_off*u[1+Nbins+i]
         du[1+Nbins+i] = e23*r3*(u[1]/(u[1]+H3))*u[1+Nbins+i] - r5*(u[1+Nbins+i]/(u[1+Nbins+i]+H5))*u[end] + chionVals[i]*u[i+1] - chi_off*u[1+Nbins+i]
     end
+
     du[end-1] = e4*r4*(sum(u[2:1+N_bins])/(sum(u[2:1+N_bins])+H4))*u[end-1]
     du[end] = e5*r5*(sum(u[2+N_bins:2+2*N_bins-1])/(sum(u[2+N_bins:2+2*N_bins-1])+H5))*u[end]
     
