@@ -30,6 +30,7 @@ for gen = 1:N_generations
     global organisms = GeneticAlgorithm.CloneOrganisms(organisms,cloning_noise,dt,t_start,t_end)
 end
 
+# Print the organisms once finished (need to change to saving as CSV)
 GeneticAlgorithm.PrintOrganisms(organisms)
 
 plt = plot()
