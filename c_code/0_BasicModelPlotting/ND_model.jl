@@ -32,6 +32,8 @@ end
 # Non-dimensionalised scaling factors
 ND_T = 24.0 # Non dimension time - hours
 ND_C = 1.0 # Non dimension concentration - ug/ml
+Vol = 3.0 # Volume of the system - ml
+Surf = 8.0 # Surface area of the system - cm^2
 
 # Efficiencies
 e23 = 0.2 # Free bacteria growth efficiency
@@ -45,14 +47,14 @@ r4 = (1/e4)*0.12*ND_T # Predator growth rate - cells/hr * ND_hrs
 r5 = (1/e5)*0.09*ND_T # Predator death rate - 1/hrs * ND_hrs
 
 # Half saturation constants
-H23 = 3.0/ND_C # Half saturations of bacteria
-H4 = 3.0/ND_C # Half saturation of free predator
+H23 = Vol/ND_C # Half saturations of bacteria
+H4 = Vol/ND_C # Half saturation of free predator
 H5 = 0.8/ND_C # Half saturation of bound predator
 
 # Attatchment parameters
-chi_on_max = (8.0/3.0)*0.05*ND_T # Attatchment parameters
-chi_on_min = (8.0/3.0)*0.0005*ND_T # Attatchment parameters
-interaction_strength = (8.0/3.0)*0.01 # Interaction strength
+chi_on_max = (Surf/Vol)*0.05*ND_T # Attatchment parameters
+chi_on_min = (Surf/Vol)*0.0005*ND_T # Attatchment parameters
+interaction_strength = (Surf/Vol)*0.01 # Interaction strength
 chi_off = 0.005*ND_T
 
 # Set the true values of the parameters
@@ -61,8 +63,9 @@ theta_true = ( r2, r3, r4, r5, e23, e4, e5, H23, H4, H5, chi_on_max, chi_on_min,
 ### Define and solve the ODE system
 
 # Set the initial conditions
+u0 = [ ND_C*Vol, 1.0*ND_C*Vol, 0.01*ND_C*Surf, 0.01*ND_C*Vol, 0.001*ND_C*Surf ] # IVP - 2B
 #u0 = [ ND_C, 1.0*ND_C, 0.01, 3.0*0.01*ND_C, 8.0*0.001*ND_C ] # IVP - 2B
-u0 = [ ND_C, 0.3*ND_C, 0.01, 10.0*0.1*ND_C, 8.0*0.1*ND_C ] # IVP - 2C
+#u0 = [ ND_C, 0.3*ND_C, 0.01, 10.0*0.1*ND_C, 8.0*0.1*ND_C ] # IVP - 2C
 
 # Set the time span of the solution
 tspan = (0.0, 1.0) # Time span of solution
@@ -87,7 +90,7 @@ if plot_solver
 
     plt = plot()
     for i = 1:5
-        plot!(plt,output_times, NofT[i,:]./Scale1[i], label=false, lw=3)
+        plot!(plt,output_times, NofT[i,:]./Scale[i], label=false, lw=3)
     end 
 
     savefig("f_figures/2C.png") 
