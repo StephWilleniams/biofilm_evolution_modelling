@@ -135,6 +135,7 @@ function ProfileLikelihoodOptimisation(ode_model, solver_algorithm, u0, dist, or
     return best_llhood, best_params, ret
 end
 
+# Univariate profile likelihood calculation for parameter of interest (index_of_interest)
 function UnivariateProfileLikelihood(index_of_interest, parameter_range_of_interest, n_PLs, ode_model, solver_algorithm, u0, dist, organ::organism, fixed_paramaters, initial_varying_params, varying_indices, synthetic_data)
     llhood_values = zeros(n_PLs)
     lower_bound = (1-parameter_range_of_interest) * fixed_paramaters[index_of_interest]
@@ -149,6 +150,7 @@ function UnivariateProfileLikelihood(index_of_interest, parameter_range_of_inter
     return llhood_values .- maximum(llhood_values) .+ quantile(Chisq(1),0.95)/2 # Shift by the 95% sig threshold (value = 0 now corresponds to 95% confidence interval)
 end
 
+# Find the zero intersections of the spline fit to some known array
 function ZeroIntersectionsSpline(arr, parameter_range_of_interest, n_PLs)
     lower_bound = (1-parameter_range_of_interest)
     upper_bound = (1+parameter_range_of_interest)
@@ -158,17 +160,15 @@ function ZeroIntersectionsSpline(arr, parameter_range_of_interest, n_PLs)
     function spline_zero(x)
         return fit(x)
     end
-
     if fit(lower_bound) * fit(1.0) > 0 || fit(1.0) * fit(upper_bound) > 0
         return NaN, NaN
     end
-
     root1 = find_zero(spline_zero,(lower_bound, 1.0))
     root2 = find_zero(spline_zero,(1.0, upper_bound))
-
     return root1, root2
 end
 
+# Profile likelihood bound calculation for parameter of interest (index_of_interest)
 function PLB(index_of_interest, parameter_range_of_interest, n_PLs, ode_model, solver_algorithm, u0, dist, organ::organism, fixed_paramaters, initial_varying_params, varying_indices, synthetic_data)
     output = UnivariateProfileLikelihood(index_of_interest, parameter_range_of_interest, n_PLs, ode_model, solver_algorithm, u0, dist, organ, fixed_paramaters, initial_varying_params, varying_indices, synthetic_data)
     root1,root2 = ZeroIntersectionsSpline(output, parameter_range_of_interest, n_PLs)
